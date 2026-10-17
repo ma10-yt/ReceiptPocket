@@ -75,10 +75,8 @@ ReceiptPocket can be configured to use this path directly if Tesseract is not av
 
 ### 2. Clone the repository
 
-Replace `YOUR_USERNAME` with your GitHub username.
-
 ```powershell
-git clone https://github.com/YOUR_USERNAME/ReceiptPocket.git
+git clone https://github.com/ma10-yt/ReceiptPocket.git
 cd ReceiptPocket
 ```
 
