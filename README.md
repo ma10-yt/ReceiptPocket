@@ -1,132 +1,250 @@
-# ReceiptPocket
+# 🧾 ReceiptPocket
 
-A local-first AI receipt organizer for freelancers and small business owners.
+### Your expenses, privately managed.
 
-## Features
+**ReceiptPocket is a local-first, AI-powered receipt and expense manager built with Python.** It uses local OCR and an open-weight language model to extract information from receipt images, helping freelancers and small business owners organize expenses without sending their receipts to a cloud AI service.
 
-- Upload receipt images (JPG, JPEG, PNG)
-- Extract text using local Tesseract OCR
-- Use AI (Ollama with qwen2.5:1.5b-instruct) to extract structured data:
-  - Merchant name
-  - Transaction date
-  - Total amount
-  - Expense category
-- Review and edit extracted information before saving
-- Store expenses locally in SQLite database
-- Save receipt images locally
-- View expenses with filtering and search
-- Monthly totals and category summaries
-- Export expenses as CSV
-- Fully offline capable after initial setup
-- Privacy-focused: all processing happens locally
+Upload a receipt, review the extracted details, save the expense locally, and keep track of your spending from one dashboard.
 
-## Privacy & Data Handling
+> Built for the [Hacktoberfest Open-Source AI Challenge — Week 2: Side Hustle](https://dev.to/challenges/hacktoberfest-week2-2026-10-12).
 
-- All OCR, AI inference, and database operations run locally on your machine
-- Communicates only with Ollama running on localhost (127.0.0.1:11434)
-- No external APIs, cloud services, or account requirements
-- No usage tracking or telemetry
-- Data stored in `data/receiptpocket.db` and images in `data/receipts/`
-- Initial setup requires internet to install dependencies and download the Ollama model
-- After setup, the application works completely offline
+---
 
-## Installation & Setup
+## ✨ Features
 
-### Prerequisites
+- **Local AI receipt extraction** — Uses Tesseract OCR and Qwen2.5 through Ollama to extract merchant names, transaction dates, amounts, and expense categories from receipt images.
+- **Privacy-first storage** — Stores expense records and receipt images on your computer using SQLite and local files.
+- **Editable extraction results** — Review and correct AI-extracted details before saving an expense.
+- **Manual expense entry** — Add expenses manually when a receipt is unavailable or automatic extraction fails.
+- **Expense dashboard** — View spending summaries, recent expenses, and category breakdowns.
+- **Expense history** — Search, filter, and inspect saved expenses and their associated receipt images.
+- **Multi-currency support** — Configure a home currency, retain original receipt amounts, and convert supported foreign-currency expenses using recorded exchange-rate information.
+- **CSV export** — Export expense records for further analysis in spreadsheet applications.
+- **Local-first architecture** — Core OCR, AI inference, and expense storage run on your computer.
 
-1. **Python 3.8+** installed
-2. **Ollama** installed and running
-3. **Tesseract OCR** installed
+## 🔒 Privacy by design
 
-### Step-by-Step Setup (Windows PowerShell)
+Your receipts can contain sensitive personal and financial information. ReceiptPocket is designed to keep that information under your control.
 
-1. **Clone or create the project directory**
-   ```powershell
-   mkdir ReceiptPocket
-   cd ReceiptPocket
-   ```
+| Component | How it works |
+|---|---|
+| OCR | Tesseract processes receipt images locally. |
+| AI extraction | Qwen2.5 runs locally through Ollama. |
+| Expense storage | SQLite stores records on your computer. |
+| Receipt images | Saved in the local project data directory. |
+| Currency conversion | Uses exchange-rate reference data when needed. |
 
-2. **Create a virtual environment (recommended)**
-   ```powershell
-   python -m venv venv
-   .\venv\Scripts\Activate.ps1
-   ```
+Receipt images, OCR text, and expense records are not sent to a hosted AI service by the receipt-processing workflow.
 
-3. **Install Python dependencies**
-   ```powershell
-   pip install -r requirements.txt
-   ```
+**A note about internet access:** You need an internet connection to install dependencies and download the AI model. Refreshing an exchange rate may also require internet access. ReceiptPocket can use locally available exchange rates or manual rates where supported. When requesting an exchange rate, the app needs the currency pair and relevant date; it does not need to upload your receipt or merchant information to the rate provider.
 
-4. **Install Ollama**
-   - Download from https://ollama.com/download
-   - Install and start the Ollama service
+For privacy, the local database, receipt files, virtual environment, and development backups are excluded from Git.
 
-5. **Pull the required AI model**
-   ```powershell
-   ollama pull qwen2.5:1.5b-instruct
-   ```
+## 🛠️ Technology stack
 
-6. **Install Tesseract OCR**
-   - Download from https://github.com/UB-Mannheim/tesseract/wiki
-   - Install and note the installation directory (e.g., `C:\Program Files\Tesseract-OCR`)
-   - Add Tesseract to your PATH or set the environment variable:
-     ```powershell
-     $env:TESSERACT_CMD = "C:\Program Files\Tesseract-OCR\tesseract.exe"
-     ```
-     (Add this to your system PATH permanently for convenience)
+| Technology | Purpose |
+|---|---|
+| Python | Application logic |
+| Streamlit | User interface and dashboard |
+| Tesseract OCR | Local text extraction from receipt images |
+| Ollama | Local model runtime |
+| Qwen2.5 1.5B Instruct | Open-weight language model for structured extraction |
+| SQLite | Local expense database |
+| Pillow | Image handling |
+| Babel | Currency and locale-aware number formatting |
+| Frankfurter API | Exchange-rate reference data |
 
-7. **Run the application**
-   ```powershell
-   streamlit run app.py
-   ```
-   The app will open in your browser at http://127.0.0.1:8501
+## 🚀 Getting started
 
-### Running Without Virtual Environment
+These instructions are for Windows and PowerShell.
 
-If you prefer not to use a virtual environment:
+### 1. Prerequisites
+
+Install the following:
+
+- **Python:** [Download Python](https://www.python.org/downloads/)
+- **Ollama:** [Download Ollama for Windows](https://ollama.com/download/windows)
+- **Tesseract OCR:** [Windows installation instructions](https://github.com/UB-Mannheim/tesseract/wiki)
+- **Git:** [Download Git](https://git-scm.com/downloads)
+
+After installing Tesseract, make sure its executable is accessible. A common installation path is:
+
+`C:\Program Files\Tesseract-OCR\tesseract.exe`
+
+ReceiptPocket can be configured to use this path directly if Tesseract is not available through `PATH`.
+
+### 2. Clone the repository
+
+Replace `YOUR_USERNAME` with your GitHub username.
+
 ```powershell
-pip install -r requirements.txt
-streamlit run app.py
+git clone https://github.com/YOUR_USERNAME/ReceiptPocket.git
+cd ReceiptPocket
 ```
 
-## Project Structure
+### 3. Create a virtual environment
 
-- `app.py`: Main Streamlit application
-- `requirements.txt`: Python dependencies
-- `README.md`: This file
-- `.gitignore`: Files and directories to exclude from Git
-- `.streamlit/config.toml`: Streamlit configuration (disables usage tracking, sets localhost binding)
-- `data/`: Directory containing SQLite database and receipt images (created automatically)
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
 
-## How It Works
+If PowerShell blocks virtual-environment activation, you can use the environment's Python executable directly in the following commands.
 
-1. **Upload**: Select a receipt image file
-2. **OCR**: Text is extracted locally using Tesseract
-3. **AI Processing**: The extracted text is sent to Ollama running locally to identify merchant, date, amount, and category
-4. **Review**: You can verify and correct the extracted information
-5. **Save**: Data is stored in the local SQLite database and the image is saved in the `data/receipts` folder
-6. **View**: Browse, search, and filter your saved expenses
-7. **Export**: Download your expense records as a CSV file
+### 4. Install Python dependencies
 
-## Troubleshooting
+```powershell
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
 
-- **Ollama connection errors**: Ensure Ollama is running (`ollama serve`) and the model is pulled
-- **Tesseract not found**: Verify Tesseract is installed and in your PATH, or set `TESSERACT_CMD` environment variable
-- **Missing dependencies**: Run `pip install -r requirements.txt` again
-- **Database issues**: The `data` folder and database are created automatically on first run
+### 5. Download the AI model
 
-## Notes
+Ensure Ollama is installed and running. Then open a PowerShell terminal and run:
 
-- The application creates a `data` folder in the same directory as `app.py`
-- Receipt images are saved with unique filenames to avoid overwriting
-- Amounts and dates are validated before saving
-- If AI or OCR fails, you can still enter receipt details manually
-- Never share your `data` folder as it contains sensitive financial information
+```powershell
+ollama pull qwen2.5:1.5b-instruct
+```
 
-## License
+This downloads the model locally. The first download requires an internet connection and sufficient storage space.
 
-This project is for personal and business use. Feel free to modify and adapt it to your needs.
+Verify the model is available:
 
-## Disclaimer
+```powershell
+ollama list
+```
 
-This software is provided "as is" without warranty of any kind. The developer is not liable for any damages arising from its use.
+If Ollama is not running, launch it through the Windows application. Alternatively, run `ollama serve` in a separate terminal if needed.
+
+### 6. Verify Tesseract
+
+Open a new PowerShell terminal and run:
+
+```powershell
+tesseract --version
+```
+
+If the command is not recognized, either add the installation directory to your Windows `PATH` or configure the application to use the full executable path.
+
+### 7. Run ReceiptPocket
+
+From the project directory:
+
+```powershell
+.\.venv\Scripts\streamlit.exe run app.py --server.address 127.0.0.1
+```
+
+Open the local URL displayed by Streamlit, normally:
+
+`http://127.0.0.1:8501`
+
+Keep Ollama running while using AI extraction.
+
+## 📖 How to use it
+
+1. **Open Overview** to view your expense summaries and recent activity.
+2. **Upload a receipt** in JPG, JPEG, or PNG format.
+3. **Extract details** using local OCR and AI.
+4. **Review the results** and correct the merchant, date, amount, category, or currency when necessary.
+5. **Save the expense** to your local SQLite database.
+6. **View Expenses** to search, filter, and inspect saved records.
+7. **Export Data** to download expenses as a CSV file.
+
+You can also enter expenses manually if OCR or AI extraction is unavailable.
+
+### Working with multiple currencies
+
+ReceiptPocket distinguishes the original receipt amount from the converted amount used for reporting.
+
+Before saving a foreign-currency expense, check the detected currency and review the proposed conversion. Exchange-rate reference values can vary from the rate actually charged by a bank or card provider.
+
+If a currency is ambiguous, a required rate is unavailable, or a record's original currency is unknown, verify the information rather than assuming a currency or inventing a conversion. Historical expenses created before currency tracking was introduced may require classification before they can be included in home-currency totals.
+
+## 🗂️ Project structure
+
+```text
+ReceiptPocket/
+├── .streamlit/
+│   └── config.toml
+├── app.py
+├── requirements.txt
+├── README.md
+├── LICENSE
+├── .gitignore
+└── data/                 # Created locally; ignored by Git
+    ├── receiptpocket.db
+    └── receipts/
+```
+
+The `data/` directory is generated locally when the application initializes. Your actual database, receipt images, and backups should remain on your computer and must not be committed to the repository.
+
+## 🧪 Testing
+
+The project has test scripts covering expense persistence, application features, currency behavior, and the receipt-processing pipeline.
+
+Run the test scripts from your project directory using your virtual environment:
+
+```powershell
+.\.venv\Scripts\python.exe -m py_compile app.py
+```
+
+If you have the corresponding test files in your local development workspace, run them individually as well:
+
+```powershell
+.\.venv\Scripts\python.exe path\to\test_multi_currency.py
+.\.venv\Scripts\python.exe path\to\test_receiptpocket.py
+.\.venv\Scripts\python.exe path\to\test_features.py
+.\.venv\Scripts\python.exe path\to\test_pipeline.py
+```
+
+Replace the placeholder paths with the actual locations of your test files. The tests may require Tesseract and Ollama to be installed and running for integration checks.
+
+## 🔐 Data and backups
+
+ReceiptPocket stores expense information locally. The default project database is:
+
+`data/receiptpocket.db`
+
+Back up the database and its associated receipt images before performing migrations, changing the application schema, or moving the project to another computer.
+
+The Git ignore rules exclude local data and development files. **Before contributing or pushing changes, verify that databases, receipt images, credentials, and private backups are not staged or tracked.**
+
+## 🛣️ Future improvements
+
+Possible areas for future development include:
+
+- Desktop packaging for easier installation.
+- More flexible receipt layouts and improved extraction accuracy.
+- Better duplicate-receipt detection.
+- Additional expense reporting and export options.
+- Simpler backup and restore workflows.
+- Further improvements to multi-currency handling and offline operation.
+
+## 🤝 Contributing
+
+Contributions, bug reports, and suggestions are welcome.
+
+1. Fork the repository.
+2. Create a branch for your change.
+3. Test your changes locally.
+4. Open a pull request describing the problem and solution.
+
+Please do not include real receipts, expense databases, private financial information, or credentials in issues and pull requests.
+
+## 📄 License
+
+ReceiptPocket is distributed under the MIT License. See [LICENSE](LICENSE) for details.
+
+## 💡 Why open-source AI?
+
+ReceiptPocket explores how open-weight AI can help people automate everyday tasks without making cloud AI services a mandatory part of the workflow.
+
+Running OCR and AI inference locally can reduce exposure of sensitive receipt information, avoid per-request charges from a hosted AI inference provider, and give users more control over their software and data.
+
+The objective is simple: make expense organization easier while keeping the core receipt-processing workflow on the user's own device.
+
+---
+
+**Built with Python, Streamlit, Tesseract OCR, Ollama, Qwen2.5, and SQLite.**
+
+#devchallenge #hf26challenge
