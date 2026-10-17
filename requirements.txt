@@ -1,0 +1,7 @@
+streamlit>=1.28.0
+pillow>=9.0.0
+pytesseract>=0.3.10
+requests>=2.25.1
+babel>=2.12.0
+babel>=2.12.0
+requests>=2.25.1
